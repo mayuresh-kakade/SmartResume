@@ -41,6 +41,7 @@
         <mapping class="com.smartresume.entity.Education"/>
         <mapping class="com.smartresume.entity.Experience"/>
         <mapping class="com.smartresume.entity.Skill"/>
+        <mapping class="com.smartresume.entity.Project"/>
 
     </session-factory>
 
