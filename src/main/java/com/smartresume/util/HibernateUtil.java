@@ -4,6 +4,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import com.smartresume.entity.Education;
+import com.smartresume.entity.Experience;
 import com.smartresume.entity.Resume;
 import com.smartresume.entity.User;
 
@@ -21,6 +22,7 @@ public class HibernateUtil {
             configuration.addAnnotatedClass(User.class);
             configuration.addAnnotatedClass(Resume.class);
             configuration.addAnnotatedClass(Education.class);
+            configuration.addAnnotatedClass(Experience.class);
 
             sessionFactory = configuration.buildSessionFactory();
 
