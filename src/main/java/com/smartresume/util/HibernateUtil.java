@@ -3,6 +3,7 @@ package com.smartresume.util;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.smartresume.entity.Certification;
 import com.smartresume.entity.Education;
 import com.smartresume.entity.Experience;
 import com.smartresume.entity.Project;
@@ -27,7 +28,7 @@ public class HibernateUtil {
             configuration.addAnnotatedClass(Experience.class);
             configuration.addAnnotatedClass(Skill.class);
             configuration.addAnnotatedClass(Project.class);
-
+            configuration.addAnnotatedClass(Certification.class);
             sessionFactory = configuration.buildSessionFactory();
 
             System.out.println(
