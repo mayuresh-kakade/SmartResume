@@ -21,7 +21,7 @@
         </property>
 
         <property name="hibernate.connection.password">
-            change it
+            Mska@7777
         </property>
 
         <property name="hibernate.show_sql">
