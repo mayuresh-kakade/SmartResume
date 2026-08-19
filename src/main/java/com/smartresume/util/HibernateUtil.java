@@ -3,6 +3,7 @@ package com.smartresume.util;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.smartresume.entity.Resume;
 import com.smartresume.entity.User;
 
 public class HibernateUtil {
@@ -11,14 +12,23 @@ public class HibernateUtil {
 
     static {
         try {
-            sessionFactory = new Configuration()
-                    .configure("hibernate.cfg.xml")
-                    .addAnnotatedClass(User.class)
-                    .buildSessionFactory();
+
+            Configuration configuration = new Configuration();
+
+            configuration.configure("hibernate.cfg.xml");
+
+            configuration.addAnnotatedClass(User.class);
+            configuration.addAnnotatedClass(Resume.class);
+
+            sessionFactory = configuration.buildSessionFactory();
+
+            System.out.println("Hibernate SessionFactory created.");
 
         } catch (Throwable e) {
-            System.err.println("Hibernate SessionFactory creation failed.");
+
+            System.out.println("Hibernate SessionFactory creation failed.");
             e.printStackTrace();
+
             throw new ExceptionInInitializerError(e);
         }
     }

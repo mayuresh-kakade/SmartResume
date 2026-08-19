@@ -37,6 +37,7 @@
         </property>
 
         <mapping class="com.smartresume.entity.User"/>
+        <mapping class="com.smartresume.entity.Resume"/>
 
     </session-factory>
 
