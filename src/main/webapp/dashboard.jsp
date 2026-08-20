@@ -216,10 +216,10 @@
                 </p>
 
                 <a
-                    href="create-resume.jsp"
+                    href="${pageContext.request.contextPath}/ResumeEditServlet"
                     class="card-btn">
 
-                    Create Resume
+                    Edit My Resume
 
                 </a>
 
