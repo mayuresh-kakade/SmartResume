@@ -1,8 +1,11 @@
 package com.smartresume.controller;
 
 import java.io.IOException;
+import java.util.List;
 
+import com.smartresume.entity.Education;
 import com.smartresume.entity.Resume;
+import com.smartresume.service.EducationService;
 import com.smartresume.service.ResumeService;
 
 import jakarta.servlet.ServletException;
@@ -18,14 +21,16 @@ public class ResumeEditServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private ResumeService resumeService;
+    private EducationService educationService;
 
     @Override
     public void init() throws ServletException {
 
         resumeService = new ResumeService();
+        educationService = new EducationService();
     }
 
-    // Open edit page
+    // Open Edit Resume page
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -54,15 +59,28 @@ public class ResumeEditServlet extends HttpServlet {
             return;
         }
 
-        request.setAttribute("resume", resume);
+        // Load education records
+        List<Education> educationList =
+                educationService.getEducationByResumeId(
+                        resume.getId()
+                );
+
+        request.setAttribute(
+                "resume",
+                resume
+        );
+
+        request.setAttribute(
+                "educationList",
+                educationList
+        );
 
         request.getRequestDispatcher(
                 "edit-resume.jsp"
         ).forward(request, response);
     }
 
-
-    // Update resume
+    // Update basic resume information
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -97,7 +115,6 @@ public class ResumeEditServlet extends HttpServlet {
         String github =
                 request.getParameter("github");
 
-
         if (headline == null
                 || headline.trim().isEmpty()
                 || summary == null
@@ -106,7 +123,16 @@ public class ResumeEditServlet extends HttpServlet {
             Resume resume =
                     resumeService.getResumeByUserId(userId);
 
+            List<Education> educationList =
+                    educationService.getEducationByResumeId(
+                            resume.getId()
+                    );
+
             request.setAttribute("resume", resume);
+            request.setAttribute(
+                    "educationList",
+                    educationList
+            );
 
             request.setAttribute(
                     "error",
@@ -120,7 +146,6 @@ public class ResumeEditServlet extends HttpServlet {
             return;
         }
 
-
         Resume resume =
                 resumeService.getResumeByUserId(userId);
 
@@ -130,21 +155,29 @@ public class ResumeEditServlet extends HttpServlet {
             return;
         }
 
-
         resume.setHeadline(headline.trim());
-
         resume.setSummary(summary.trim());
-
         resume.setPhone(phone);
-
         resume.setLinkedin(linkedin);
-
         resume.setGithub(github);
-
 
         boolean updated =
                 resumeService.updateResume(resume);
 
+        List<Education> educationList =
+                educationService.getEducationByResumeId(
+                        resume.getId()
+                );
+
+        request.setAttribute(
+                "resume",
+                resume
+        );
+
+        request.setAttribute(
+                "educationList",
+                educationList
+        );
 
         if (updated) {
 
@@ -160,15 +193,6 @@ public class ResumeEditServlet extends HttpServlet {
                     "Unable to update resume."
             );
         }
-
-
-        Resume updatedResume =
-                resumeService.getResumeByUserId(userId);
-
-        request.setAttribute(
-                "resume",
-                updatedResume
-        );
 
         request.getRequestDispatcher(
                 "edit-resume.jsp"
