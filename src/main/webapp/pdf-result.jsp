@@ -2,6 +2,10 @@
     contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="com.smartresume.service.ResumeParserResult" %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +16,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>SmartResume - PDF Result</title>
+    <title>SmartResume - Parsed Resume</title>
 
     <style>
 
@@ -31,7 +35,9 @@
         .card {
             background: white;
             padding: 30px;
+            margin-bottom: 25px;
             border-radius: 12px;
+
             box-shadow:
                 0 4px 18px rgba(0, 0, 0, 0.08);
         }
@@ -40,33 +46,51 @@
             color: #222;
         }
 
-        .success {
-            background: #dcfce7;
-            color: #166534;
-            padding: 12px;
-            border-radius: 7px;
-            margin-bottom: 20px;
+        h2 {
+            color: #2563eb;
         }
 
-        .text-area {
+        h3 {
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-top: 20px;
+            padding: 20px;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+
+        .line {
+            padding: 6px 0;
+            color: #555;
+        }
+
+        .raw-text {
             width: 100%;
-            min-height: 500px;
+            min-height: 400px;
+
             padding: 15px;
+
             border: 1px solid #d0d5dd;
             border-radius: 8px;
-            resize: vertical;
+
             font-family: Consolas, monospace;
-            font-size: 14px;
-            line-height: 1.5;
         }
 
         .btn {
             display: inline-block;
+
             margin-top: 20px;
+
             padding: 12px 20px;
+
             background: #2563eb;
             color: white;
+
             text-decoration: none;
+
             border-radius: 7px;
         }
 
@@ -81,67 +105,98 @@
     <div class="card">
 
         <h1>
-            PDF Text Extraction Result
+            Resume Analysis
         </h1>
 
         <%
-            String success =
-                    (String) request.getAttribute(
-                            "success"
+            ResumeParserResult result =
+                    (ResumeParserResult)
+                    request.getAttribute(
+                            "parserResult"
                     );
 
-            String fileName =
-                    (String) request.getAttribute(
-                            "fileName"
-                    );
+            if (result != null) {
 
-            String extractedText =
-                    (String) request.getAttribute(
-                            "extractedText"
-                    );
+                Map<String, List<String>> sections =
+                        result.getSections();
         %>
 
+        <h2>
+            Detected Resume Sections
+        </h2>
 
-        <% if (success != null) { %>
 
-            <div class="success">
-                <%= success %>
+        <%
+            for (Map.Entry<String, List<String>> entry
+                    : sections.entrySet()) {
+        %>
+
+            <div class="section">
+
+                <h3>
+                    <%= entry.getKey() %>
+                </h3>
+
+                <%
+                    List<String> lines =
+                            entry.getValue();
+
+                    if (lines.isEmpty()) {
+                %>
+
+                    <p>
+                        No content detected.
+                    </p>
+
+                <%
+                    } else {
+
+                        for (String line : lines) {
+                %>
+
+                    <div class="line">
+                        <%= line %>
+                    </div>
+
+                <%
+                        }
+                    }
+                %>
+
             </div>
 
-        <% } %>
-
-
-        <p>
-            <strong>Uploaded File:</strong>
-            <%= fileName != null
-                    ? fileName
-                    : "Unknown" %>
-        </p>
-
-
-        <h3>
-            Extracted Resume Text
-        </h3>
-
-
-        <textarea
-            class="text-area"
-            readonly><%= extractedText != null
-                    ? extractedText
-                    : "" %></textarea>
-
-
-        <br>
-
-        <a
-            href="pdf-upload.jsp"
-            class="btn">
-
-            Upload Another PDF
-
-        </a>
+        <%
+            }
+        }
+        %>
 
     </div>
+
+
+    <div class="card">
+
+        <h2>
+            Raw Extracted Text
+        </h2>
+
+        <textarea
+            class="raw-text"
+            readonly><%
+                if (result != null) {
+                    out.print(result.getRawText());
+                }
+            %></textarea>
+
+    </div>
+
+
+    <a
+        href="dashboard.jsp"
+        class="btn">
+
+        Back to Dashboard
+
+    </a>
 
 </div>
 

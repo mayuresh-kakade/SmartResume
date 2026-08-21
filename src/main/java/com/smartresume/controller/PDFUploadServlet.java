@@ -10,6 +10,9 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
+import com.smartresume.service.ResumeParserResult;
+import com.smartresume.service.ResumeParserService;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,12 +32,22 @@ public class PDFUploadServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
+    private ResumeParserService resumeParserService;
+
+    @Override
+    public void init() throws ServletException {
+
+        resumeParserService =
+                new ResumeParserService();
+    }
+
     @Override
     protected void doPost(
             HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Check login session
         HttpSession session =
                 request.getSession(false);
 
@@ -45,6 +58,7 @@ public class PDFUploadServlet extends HttpServlet {
             return;
         }
 
+        // Get uploaded file
         Part filePart =
                 request.getPart("resumeFile");
 
@@ -63,12 +77,29 @@ public class PDFUploadServlet extends HttpServlet {
             return;
         }
 
+        // Original filename
         String submittedName =
                 filePart.getSubmittedFileName();
 
         if (submittedName == null
-                || !submittedName.toLowerCase()
-                        .endsWith(".pdf")) {
+                || submittedName.trim().isEmpty()) {
+
+            request.setAttribute(
+                    "error",
+                    "Invalid file name."
+            );
+
+            request.getRequestDispatcher(
+                    "pdf-upload.jsp"
+            ).forward(request, response);
+
+            return;
+        }
+
+        // Check PDF extension
+        if (!submittedName
+                .toLowerCase()
+                .endsWith(".pdf")) {
 
             request.setAttribute(
                     "error",
@@ -85,8 +116,9 @@ public class PDFUploadServlet extends HttpServlet {
         try {
 
             /*
-             * Read uploaded PDF into memory.
-             * We use PDFBox to extract text.
+             * ========================================
+             * READ PDF FILE
+             * ========================================
              */
 
             byte[] pdfBytes;
@@ -94,11 +126,15 @@ public class PDFUploadServlet extends HttpServlet {
             try (InputStream inputStream =
                          filePart.getInputStream()) {
 
-                pdfBytes = inputStream.readAllBytes();
+                pdfBytes =
+                        inputStream.readAllBytes();
             }
 
+
             /*
-             * Extract text
+             * ========================================
+             * EXTRACT TEXT USING PDFBOX
+             * ========================================
              */
 
             String extractedText;
@@ -113,8 +149,46 @@ public class PDFUploadServlet extends HttpServlet {
                         stripper.getText(document);
             }
 
+
             /*
-             * Store original PDF
+             * ========================================
+             * CHECK EXTRACTED TEXT
+             * ========================================
+             */
+
+            if (extractedText == null
+                    || extractedText.trim().isEmpty()) {
+
+                request.setAttribute(
+                        "error",
+                        "No readable text was found in this PDF. "
+                        + "Please upload a text-based PDF."
+                );
+
+                request.getRequestDispatcher(
+                        "pdf-upload.jsp"
+                ).forward(request, response);
+
+                return;
+            }
+
+
+            /*
+             * ========================================
+             * PARSE RESUME TEXT
+             * ========================================
+             */
+
+            ResumeParserResult parserResult =
+                    resumeParserService.parse(
+                            extractedText
+                    );
+
+
+            /*
+             * ========================================
+             * SAVE ORIGINAL PDF
+             * ========================================
              */
 
             Integer userId =
@@ -125,35 +199,69 @@ public class PDFUploadServlet extends HttpServlet {
             String safeFileName =
                     "resume_" + userId + ".pdf";
 
-            Path uploadDirectory =
-                    Paths.get(
-                            getServletContext()
-                                    .getRealPath(
-                                            "/uploads"
-                                    )
+
+            /*
+             * getRealPath points to the deployed
+             * application's uploads directory.
+             */
+
+            String realUploadPath =
+                    getServletContext().getRealPath(
+                            "/uploads"
                     );
 
+            if (realUploadPath == null) {
+
+                request.setAttribute(
+                        "error",
+                        "Upload directory could not be found."
+                );
+
+                request.getRequestDispatcher(
+                        "pdf-upload.jsp"
+                ).forward(request, response);
+
+                return;
+            }
+
+
+            Path uploadDirectory =
+                    Paths.get(realUploadPath);
+
+
+            // Create uploads directory if missing
             Files.createDirectories(
                     uploadDirectory
             );
+
 
             Path targetFile =
                     uploadDirectory.resolve(
                             safeFileName
                     );
 
+
+            // Save uploaded PDF
             Files.write(
                     targetFile,
                     pdfBytes
             );
 
+
             /*
-             * Send extracted text to JSP
+             * ========================================
+             * SEND DATA TO RESULT JSP
+             * ========================================
              */
 
             request.setAttribute(
                     "extractedText",
                     extractedText
+            );
+
+            request.setAttribute(
+                    "parserResult",
+                    parserResult
             );
 
             request.setAttribute(
@@ -163,12 +271,18 @@ public class PDFUploadServlet extends HttpServlet {
 
             request.setAttribute(
                     "success",
-                    "PDF uploaded and text extracted successfully."
+                    "PDF uploaded and analyzed successfully."
             );
+
+
+            /*
+             * Go to result page
+             */
 
             request.getRequestDispatcher(
                     "pdf-result.jsp"
             ).forward(request, response);
+
 
         } catch (Exception e) {
 
@@ -176,8 +290,8 @@ public class PDFUploadServlet extends HttpServlet {
 
             request.setAttribute(
                     "error",
-                    "Unable to process the PDF: "
-                            + e.getMessage()
+                    "Unable to process PDF: "
+                    + e.getMessage()
             );
 
             request.getRequestDispatcher(
