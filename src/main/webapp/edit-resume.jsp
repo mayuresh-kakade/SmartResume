@@ -6,6 +6,7 @@
 <%@ page import="com.smartresume.entity.Education" %>
 <%@ page import="com.smartresume.entity.Experience" %>
 <%@ page import="com.smartresume.entity.Skill" %>
+<%@ page import="com.smartresume.entity.Project" %>
 <%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -1315,6 +1316,200 @@
 
         No skills added yet.
 
+    </div>
+
+<%
+    }
+%>
+
+</div>
+<%
+    List<Project> projectList =
+            (List<Project>) request.getAttribute(
+                    "projectList"
+            );
+
+    String projectError =
+            (String) session.getAttribute("projectError");
+
+    String projectSuccess =
+            (String) session.getAttribute("projectSuccess");
+
+    session.removeAttribute("projectError");
+    session.removeAttribute("projectSuccess");
+%>
+
+<div class="card">
+
+    <h2 class="section-title">
+        Projects
+    </h2>
+
+    <p class="section-description">
+        Add important academic, personal or professional projects.
+    </p>
+
+    <% if (projectError != null) { %>
+
+        <div class="error">
+            <%= projectError %>
+        </div>
+
+    <% } %>
+
+    <% if (projectSuccess != null) { %>
+
+        <div class="success">
+            <%= projectSuccess %>
+        </div>
+
+    <% } %>
+
+    <form
+        action="${pageContext.request.contextPath}/ProjectServlet"
+        method="post">
+
+        <div class="form-group">
+
+            <label for="projectName">
+                Project Name *
+            </label>
+
+            <input
+                type="text"
+                id="projectName"
+                name="projectName"
+                placeholder="Example: SmartResume"
+                maxlength="200"
+                required>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="description">
+                Description
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                maxlength="1500"
+                placeholder="Describe the project, your role and achievements..."></textarea>
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="technologies">
+                Technologies
+            </label>
+
+            <input
+                type="text"
+                id="technologies"
+                name="technologies"
+                placeholder="Example: Java, JSP, Hibernate, MySQL"
+                maxlength="500">
+
+        </div>
+
+        <div class="form-group">
+
+            <label for="projectLink">
+                Project Link
+            </label>
+
+            <input
+                type="url"
+                id="projectLink"
+                name="projectLink"
+                placeholder="https://github.com/your-project"
+                maxlength="500">
+
+        </div>
+
+        <div class="button-container">
+
+            <button
+                type="submit"
+                class="primary-btn">
+
+                Add Project
+
+            </button>
+
+        </div>
+
+    </form>
+
+    <hr class="divider">
+
+    <h3 class="section-title">
+        Your Projects
+    </h3>
+
+<%
+    if (projectList != null
+            && !projectList.isEmpty()) {
+%>
+
+    <% for (Project project : projectList) { %>
+
+        <div class="education-record">
+
+            <h3>
+                <%= project.getProjectName() %>
+            </h3>
+
+            <p>
+                <strong>Technologies:</strong>
+                <%= project.getTechnologies() != null
+                        && !project.getTechnologies().isEmpty()
+                        ? project.getTechnologies()
+                        : "Not specified" %>
+            </p>
+
+            <p>
+                <strong>Description:</strong>
+                <%= project.getDescription() != null
+                        && !project.getDescription().isEmpty()
+                        ? project.getDescription()
+                        : "Not provided" %>
+            </p>
+
+            <p>
+                <strong>Project Link:</strong>
+
+                <% if (project.getProjectLink() != null
+                        && !project.getProjectLink().isEmpty()) { %>
+
+                    <a
+                        href="<%= project.getProjectLink() %>"
+                        target="_blank">
+
+                        View Project
+
+                    </a>
+
+                <% } else { %>
+
+                    Not provided
+
+                <% } %>
+
+            </p>
+
+        </div>
+
+    <% } %>
+
+<%
+    } else {
+%>
+
+    <div class="empty-message">
+        No projects added yet.
     </div>
 
 <%

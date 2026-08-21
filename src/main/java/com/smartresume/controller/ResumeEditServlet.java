@@ -12,6 +12,8 @@ import com.smartresume.entity.Experience;
 import com.smartresume.service.ExperienceService;
 import com.smartresume.entity.Skill;
 import com.smartresume.service.SkillService;
+import com.smartresume.entity.Project;
+import com.smartresume.service.ProjectService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,6 +31,7 @@ public class ResumeEditServlet extends HttpServlet {
     private EducationService educationService;
     private ExperienceService experienceService;
     private SkillService skillService;
+    private ProjectService projectService;
     @Override
     public void init() throws ServletException {
 
@@ -36,6 +39,7 @@ public class ResumeEditServlet extends HttpServlet {
         educationService = new EducationService();
         experienceService = new ExperienceService();
         skillService = new SkillService();
+        projectService = new ProjectService();
     }
 
     // Open Edit Resume page
@@ -80,6 +84,10 @@ public class ResumeEditServlet extends HttpServlet {
                 skillService.getSkillsByResumeId(
                         resume.getId()
                 );
+        List<Project> projectList =
+                projectService.getProjectsByResumeId(
+                        resume.getId()
+                );
         request.setAttribute(
                 "resume",
                 resume
@@ -96,6 +104,10 @@ public class ResumeEditServlet extends HttpServlet {
         request.setAttribute(
                 "skillList",
                 skillList
+        );
+        request.setAttribute(
+                "projectList",
+                projectList
         );
         request.getRequestDispatcher(
                 "edit-resume.jsp"
