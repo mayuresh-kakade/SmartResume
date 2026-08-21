@@ -270,7 +270,26 @@
                 </a>
 
             </div>
+			<div class="card">
 
+    <h2>
+        Upload Resume
+    </h2>
+
+    <p>
+        Upload an existing PDF resume and extract
+        its content for SmartResume analysis.
+    </p>
+
+    <a
+        href="pdf-upload.jsp"
+        class="card-btn">
+
+        Upload PDF
+
+    </a>
+
+</div>
 
         </div>
 
