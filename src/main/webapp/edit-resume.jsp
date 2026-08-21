@@ -7,6 +7,7 @@
 <%@ page import="com.smartresume.entity.Experience" %>
 <%@ page import="com.smartresume.entity.Skill" %>
 <%@ page import="com.smartresume.entity.Project" %>
+<%@ page import="com.smartresume.entity.Certification" %>
 <%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -1510,6 +1511,261 @@
 
     <div class="empty-message">
         No projects added yet.
+    </div>
+
+<%
+    }
+%>
+
+</div>
+<%
+    List<Certification> certificationList =
+            (List<Certification>) request.getAttribute(
+                    "certificationList"
+            );
+
+    String certificationError =
+            (String) session.getAttribute(
+                    "certificationError"
+            );
+
+    String certificationSuccess =
+            (String) session.getAttribute(
+                    "certificationSuccess"
+            );
+
+    session.removeAttribute("certificationError");
+    session.removeAttribute("certificationSuccess");
+%>
+
+<div class="card">
+
+    <h2 class="section-title">
+        Certifications
+    </h2>
+
+    <p class="section-description">
+        Add professional certifications and credentials.
+    </p>
+
+
+    <% if (certificationError != null) { %>
+
+        <div class="error">
+            <%= certificationError %>
+        </div>
+
+    <% } %>
+
+
+    <% if (certificationSuccess != null) { %>
+
+        <div class="success">
+            <%= certificationSuccess %>
+        </div>
+
+    <% } %>
+
+
+    <form
+        action="${pageContext.request.contextPath}/CertificationServlet"
+        method="post">
+
+
+        <div class="form-group">
+
+            <label for="certificationName">
+                Certification Name *
+            </label>
+
+            <input
+                type="text"
+                id="certificationName"
+                name="certificationName"
+                placeholder="Example: AWS Certified Cloud Practitioner"
+                maxlength="200"
+                required>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="issuingOrganization">
+                Issuing Organization
+            </label>
+
+            <input
+                type="text"
+                id="issuingOrganization"
+                name="issuingOrganization"
+                placeholder="Example: Amazon Web Services"
+                maxlength="200">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="issueDate">
+                Issue Date
+            </label>
+
+            <input
+                type="text"
+                id="issueDate"
+                name="issueDate"
+                placeholder="Example: May 2026"
+                maxlength="100">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="expiryDate">
+                Expiry Date
+            </label>
+
+            <input
+                type="text"
+                id="expiryDate"
+                name="expiryDate"
+                placeholder="Example: May 2029 / No Expiry"
+                maxlength="100">
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="credentialUrl">
+                Credential URL
+            </label>
+
+            <input
+                type="url"
+                id="credentialUrl"
+                name="credentialUrl"
+                placeholder="https://..."
+                maxlength="500">
+
+        </div>
+
+
+        <div class="button-container">
+
+            <button
+                type="submit"
+                class="primary-btn">
+
+                Add Certification
+
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <hr class="divider">
+
+
+    <h3 class="section-title">
+        Your Certifications
+    </h3>
+
+
+<%
+    if (certificationList != null
+            && !certificationList.isEmpty()) {
+%>
+
+
+    <% for (Certification certification
+            : certificationList) { %>
+
+        <div class="education-record">
+
+            <h3>
+                <%= certification.getCertificationName() %>
+            </h3>
+
+            <p>
+                <strong>Organization:</strong>
+
+                <%= certification.getIssuingOrganization()
+                        != null
+                        && !certification
+                                .getIssuingOrganization()
+                                .isEmpty()
+                        ? certification
+                                .getIssuingOrganization()
+                        : "Not specified" %>
+            </p>
+
+            <p>
+                <strong>Issue Date:</strong>
+
+                <%= certification.getIssueDate()
+                        != null
+                        && !certification
+                                .getIssueDate()
+                                .isEmpty()
+                        ? certification.getIssueDate()
+                        : "Not specified" %>
+            </p>
+
+            <p>
+                <strong>Expiry Date:</strong>
+
+                <%= certification.getExpiryDate()
+                        != null
+                        && !certification
+                                .getExpiryDate()
+                                .isEmpty()
+                        ? certification.getExpiryDate()
+                        : "No expiry" %>
+            </p>
+
+            <p>
+                <strong>Credential:</strong>
+
+                <% if (certification.getCredentialUrl()
+                        != null
+                        && !certification
+                                .getCredentialUrl()
+                                .isEmpty()) { %>
+
+                    <a
+                        href="<%= certification.getCredentialUrl() %>"
+                        target="_blank">
+
+                        View Credential
+
+                    </a>
+
+                <% } else { %>
+
+                    Not provided
+
+                <% } %>
+
+            </p>
+
+        </div>
+
+    <% } %>
+
+
+<%
+    } else {
+%>
+
+    <div class="empty-message">
+
+        No certifications added yet.
+
     </div>
 
 <%
