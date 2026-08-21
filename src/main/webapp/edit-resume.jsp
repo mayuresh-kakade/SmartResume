@@ -5,6 +5,7 @@
 <%@ page import="com.smartresume.entity.Resume" %>
 <%@ page import="com.smartresume.entity.Education" %>
 <%@ page import="com.smartresume.entity.Experience" %>
+<%@ page import="com.smartresume.entity.Skill" %>
 <%@ page import="java.util.List" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -1154,7 +1155,173 @@
 %>
 
 </div>
+<%
+    List<Skill> skillList =
+            (List<Skill>) request.getAttribute(
+                    "skillList"
+            );
 
+    String skillError =
+            (String) session.getAttribute("skillError");
+
+    String skillSuccess =
+            (String) session.getAttribute("skillSuccess");
+
+    session.removeAttribute("skillError");
+    session.removeAttribute("skillSuccess");
+%>
+
+<div class="card">
+
+    <h2 class="section-title">
+        Skills
+    </h2>
+
+    <p class="section-description">
+        Add technical and professional skills.
+    </p>
+
+    <% if (skillError != null) { %>
+
+        <div class="error">
+            <%= skillError %>
+        </div>
+
+    <% } %>
+
+    <% if (skillSuccess != null) { %>
+
+        <div class="success">
+            <%= skillSuccess %>
+        </div>
+
+    <% } %>
+
+
+    <form
+        action="${pageContext.request.contextPath}/SkillServlet"
+        method="post">
+
+        <div class="form-group">
+
+            <label for="skillName">
+                Skill Name *
+            </label>
+
+            <input
+                type="text"
+                id="skillName"
+                name="skillName"
+                placeholder="Example: Java"
+                maxlength="100"
+                required>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="skillLevel">
+                Skill Level
+            </label>
+
+            <select
+                id="skillLevel"
+                name="skillLevel">
+
+                <option value="">
+                    Select Level
+                </option>
+
+                <option value="Beginner">
+                    Beginner
+                </option>
+
+                <option value="Intermediate">
+                    Intermediate
+                </option>
+
+                <option value="Advanced">
+                    Advanced
+                </option>
+
+                <option value="Expert">
+                    Expert
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="button-container">
+
+            <button
+                type="submit"
+                class="primary-btn">
+
+                Add Skill
+
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <hr class="divider">
+
+
+    <h3 class="section-title">
+        Your Skills
+    </h3>
+
+
+<%
+    if (skillList != null
+            && !skillList.isEmpty()) {
+%>
+
+    <% for (Skill skill : skillList) { %>
+
+        <div class="education-record">
+
+            <h3>
+                <%= skill.getSkillName() %>
+            </h3>
+
+            <p>
+
+                <strong>
+                    Level:
+                </strong>
+
+                <%= skill.getSkillLevel() != null
+                        && !skill.getSkillLevel().isEmpty()
+                        ? skill.getSkillLevel()
+                        : "Not specified" %>
+
+            </p>
+
+        </div>
+
+    <% } %>
+
+<%
+    } else {
+%>
+
+    <div class="empty-message">
+
+        No skills added yet.
+
+    </div>
+
+<%
+    }
+%>
+
+</div>
 <!-- =========================
      FUTURE SECTIONS
      ========================= -->
