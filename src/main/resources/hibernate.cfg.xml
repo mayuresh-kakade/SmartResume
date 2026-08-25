@@ -45,7 +45,7 @@
         <mapping class="com.smartresume.entity.Certification"/>
         <mapping class="com.smartresume.entity.Company"/>
         <mapping class="com.smartresume.entity.JobRole"/>
-
+		<mapping class="com.smartresume.entity.JobSkill"/>
     </session-factory>
 
 </hibernate-configuration>
