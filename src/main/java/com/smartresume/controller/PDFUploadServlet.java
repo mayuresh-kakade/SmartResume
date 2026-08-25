@@ -1,6 +1,7 @@
 package com.smartresume.controller;
 
 import java.io.IOException;
+
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 import com.smartresume.service.ResumeParserResult;
 import com.smartresume.service.ResumeParserService;
+import com.smartresume.service.ParsedResumeData;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -183,7 +185,10 @@ public class PDFUploadServlet extends HttpServlet {
                     resumeParserService.parse(
                             extractedText
                     );
-
+            ParsedResumeData parsedData =
+                    resumeParserService.parseStructuredData(
+                            extractedText
+                    );
 
             /*
              * ========================================
@@ -262,6 +267,10 @@ public class PDFUploadServlet extends HttpServlet {
             request.setAttribute(
                     "parserResult",
                     parserResult
+            );
+            request.setAttribute(
+                    "parsedData",
+                    parsedData
             );
 
             request.setAttribute(

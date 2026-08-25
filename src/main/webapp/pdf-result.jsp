@@ -5,6 +5,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.smartresume.service.ResumeParserResult" %>
+<%@ page import="com.smartresume.service.ParsedResumeData" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -120,6 +121,45 @@
                 Map<String, List<String>> sections =
                         result.getSections();
         %>
+        <%
+    		ParsedResumeData parsedData =
+            (ParsedResumeData) request.getAttribute(
+                    "parsedData"
+            );
+		%>
+		<% if (parsedData != null) { %>
+
+    <h2>Detected Basic Information</h2>
+
+    <p>
+        <strong>Name:</strong>
+        <%= parsedData.getName() != null
+                ? parsedData.getName()
+                : "Not detected" %>
+    </p>
+
+    <p>
+        <strong>Email:</strong>
+        <%= parsedData.getEmail() != null
+                ? parsedData.getEmail()
+                : "Not detected" %>
+    </p>
+
+    <p>
+        <strong>Phone:</strong>
+        <%= parsedData.getPhone() != null
+                ? parsedData.getPhone()
+                : "Not detected" %>
+    </p>
+
+    <p>
+        <strong>Summary:</strong>
+        <%= parsedData.getSummary() != null
+                ? parsedData.getSummary()
+                : "Not detected" %>
+    </p>
+
+<% } %>
 
         <h2>
             Detected Resume Sections
