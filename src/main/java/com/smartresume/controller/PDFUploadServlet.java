@@ -185,6 +185,10 @@ public class PDFUploadServlet extends HttpServlet {
                     resumeParserService.parse(
                             extractedText
                     );
+            request.getSession().setAttribute(
+                    "uploadedResumeText",
+                    extractedText
+            );
             ParsedResumeData parsedData =
                     resumeParserService.parseStructuredData(
                             extractedText

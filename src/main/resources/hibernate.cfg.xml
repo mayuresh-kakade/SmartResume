@@ -43,6 +43,7 @@
         <mapping class="com.smartresume.entity.Skill"/>
         <mapping class="com.smartresume.entity.Project"/>
         <mapping class="com.smartresume.entity.Certification"/>
+        <mapping class="com.smartresume.entity.Company"/>
 
     </session-factory>
 

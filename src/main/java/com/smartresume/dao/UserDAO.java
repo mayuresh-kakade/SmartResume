@@ -77,4 +77,20 @@ public class UserDAO {
             return false;
         }
     }
+    public User findUserById(int userId) {
+
+        try (Session session = sessionFactory.openSession()) {
+
+            return session.get(
+                    User.class,
+                    userId
+            );
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return null;
+        }
+    }
 }

@@ -128,6 +128,19 @@
             );
 		%>
 		<% if (parsedData != null) { %>
+		<form
+    action="${pageContext.request.contextPath}/ImportResumeServlet"
+    method="post">
+
+    <button
+        type="submit"
+        class="btn">
+
+        Import Resume into SmartResume
+
+    </button>
+
+</form>
 
     <h2>Detected Basic Information</h2>
 

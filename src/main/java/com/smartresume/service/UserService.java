@@ -2,6 +2,7 @@ package com.smartresume.service;
 
 import com.smartresume.dao.UserDAO;
 import com.smartresume.entity.User;
+import com.smartresume.util.PasswordUtil;
 
 public class UserService {
 
@@ -20,18 +21,31 @@ public class UserService {
             return "EMAIL_EXISTS";
         }
 
-        User user = new User(
-                name,
-                email,
-                password
-        );
+        String hashedPassword =
+                PasswordUtil.hashPassword(password);
 
-        boolean saved = userDAO.saveUser(user);
+        User user =
+                new User(
+                        name,
+                        email,
+                        hashedPassword
+                );
 
-        return saved ? "SUCCESS" : "FAILED";
+        boolean saved =
+                userDAO.saveUser(user);
+
+        return saved
+                ? "SUCCESS"
+                : "FAILED";
     }
 
     public User loginUser(String email) {
+
         return userDAO.findUserByEmail(email);
+    }
+
+    public User getUserById(int userId) {
+
+        return userDAO.findUserById(userId);
     }
 }
