@@ -6,19 +6,19 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import com.smartresume.entity.Company;
+import com.smartresume.entity.JobRole;
 import com.smartresume.util.HibernateUtil;
 
-public class CompanyDAO {
+public class JobRoleDAO {
 
     private final SessionFactory sessionFactory;
 
-    public CompanyDAO() {
+    public JobRoleDAO() {
         sessionFactory = HibernateUtil.getSessionFactory();
     }
 
-    // Save company
-    public boolean saveCompany(Company company) {
+    // Save job role
+    public boolean saveJobRole(JobRole jobRole) {
 
         Transaction transaction = null;
 
@@ -26,7 +26,7 @@ public class CompanyDAO {
 
             transaction = session.beginTransaction();
 
-            session.persist(company);
+            session.persist(jobRole);
 
             transaction.commit();
 
@@ -44,14 +44,14 @@ public class CompanyDAO {
         }
     }
 
-    // Get all companies
-    public List<Company> findAllCompanies() {
+    // Get all job roles
+    public List<JobRole> findAllJobRoles() {
 
         try (Session session = sessionFactory.openSession()) {
 
             return session.createQuery(
-                    "FROM Company ORDER BY name",
-                    Company.class
+                    "FROM JobRole ORDER BY title",
+                    JobRole.class
             ).getResultList();
 
         } catch (Exception e) {
@@ -62,32 +62,32 @@ public class CompanyDAO {
         }
     }
 
-    // Find company by ID
-    public Company findById(Long id) {
-
-        try (Session session = sessionFactory.openSession()) {
-
-            return session.get(Company.class, id);
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-            return null;
-        }
-    }
-
-    // Find company by name
-    public Company findByName(String name) {
+    // Get job roles of a company
+    public List<JobRole> findByCompanyId(Long companyId) {
 
         try (Session session = sessionFactory.openSession()) {
 
             return session.createQuery(
-                    "FROM Company c WHERE c.name = :name",
-                    Company.class
+                    "FROM JobRole j WHERE j.company.id = :companyId ORDER BY title",
+                    JobRole.class
             )
-            .setParameter("name", name)
-            .uniqueResult();
+            .setParameter("companyId", companyId)
+            .getResultList();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return List.of();
+        }
+    }
+
+    // Find by ID
+    public JobRole findById(Long id) {
+
+        try (Session session = sessionFactory.openSession()) {
+
+            return session.get(JobRole.class, id);
 
         } catch (Exception e) {
 
@@ -97,8 +97,8 @@ public class CompanyDAO {
         }
     }
 
-    // Update company
-    public boolean updateCompany(Company company) {
+    // Update
+    public boolean updateJobRole(JobRole jobRole) {
 
         Transaction transaction = null;
 
@@ -106,7 +106,7 @@ public class CompanyDAO {
 
             transaction = session.beginTransaction();
 
-            session.merge(company);
+            session.merge(jobRole);
 
             transaction.commit();
 
@@ -124,8 +124,8 @@ public class CompanyDAO {
         }
     }
 
-    // Delete company
-    public boolean deleteCompany(Company company) {
+    // Delete
+    public boolean deleteJobRole(JobRole jobRole) {
 
         Transaction transaction = null;
 
@@ -134,7 +134,7 @@ public class CompanyDAO {
             transaction = session.beginTransaction();
 
             session.remove(
-                    session.merge(company)
+                    session.merge(jobRole)
             );
 
             transaction.commit();
